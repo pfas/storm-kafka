@@ -1,0 +1,22 @@
+app:
+  app-name: MachineLearning
+  env: local
+
+kafka-spout:
+  host: kfan01.chinaeast2.cloudapp.chinacloudapi.cn
+  port: 9092
+  topic: kafka-iot
+  group-id: strom-consumer
+
+model-server:
+  host: localhost
+  port: 80
+  model-url: https://localhost:80
+  model-config-url: https://localhost:80
+
+control-server:
+  host: localhost
+  port: 80
+  control-url: https://localhost:80
+
+
