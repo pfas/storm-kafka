@@ -5,9 +5,18 @@ import java.util.Queue;
 
 public class ProcessMsg implements Serializable {
 
+    private String model;
     private int windowSize;
     private int blockSize;
     private Queue<Object> window;
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
 
     public int getWindowSize() {
         return windowSize;

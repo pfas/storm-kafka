@@ -13,6 +13,7 @@ import org.apache.storm.tuple.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 
@@ -37,6 +38,7 @@ public class FeatureComputeBolt extends BaseRichBolt {
 
     private ModelMsg computeFeature(int windowSize, int blockSize, Queue<Object> window) {
         ModelMsg modelMsg = new ModelMsg();
+        LinkedList<Object> linkedList = (LinkedList<Object>) window;
         //TODO: 特征计算, 并把特征计算结果放在 ModelMsg 中
         return  modelMsg;
     }

@@ -36,7 +36,7 @@ public class WindowsBolt extends BaseRichBolt {
         this.outputCollector = outputCollector;
     }
 
-    private int[] getWindowSize() {
+    private int[] getWindowSize(String model) {
         /**
          *
          * TODO ： 从模型处获取窗口大小和切块大小
@@ -67,9 +67,20 @@ public class WindowsBolt extends BaseRichBolt {
         return msg;
     }
 
+
+    public String determineModel (Object o) {
+
+        /**
+         * TODO 确定模型类型
+         */
+        return  "";
+    }
+
     public void execute(Tuple tuple) {
-        int[] modelConfig = getWindowSize();
         Object msg = parseTuple(tuple);
+        String model = determineModel(tuple);
+        int[] modelConfig = getWindowSize(model);
+
         window.add(msg);
         while (window.size() > modelConfig[0]) {
             window.poll();
