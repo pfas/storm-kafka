@@ -1,9 +1,11 @@
 package config;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
 import java.util.Map;
+import java.util.Properties;
 import java.util.UUID;
 
 import static org.apache.logging.log4j.core.util.Loader.getClassLoader;
@@ -35,14 +37,34 @@ public class AppConfig {
         public static int port;
         public static String topic;
         public static String groupId;
+        public static Boolean enableAutoCommit;
+        public static String autoOffsetReset;
+
 
         public static void init(Map<String, Object> map) {
             host = (String) map.getOrDefault("host", null);
             port = (int) map.getOrDefault("port", null);
             topic = (String) map.getOrDefault("topic", null);
             groupId = (String) map.getOrDefault("group-id", null);
-
+            autoOffsetReset = (String) map.getOrDefault("auto-offset-reset", null);
+            enableAutoCommit = (Boolean) map.getOrDefault("enable-auto-commit", null);
         }
+
+        public static Properties kafkaProperties() {
+            Properties properties = new Properties();
+            if (groupId != null) {
+                properties.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+            }
+            if (autoOffsetReset != null) {
+                properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoOffsetReset);
+            }
+            if (enableAutoCommit != null) {
+                properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, enableAutoCommit);
+            }
+            return properties;
+        }
+
+
     }
 
     /**

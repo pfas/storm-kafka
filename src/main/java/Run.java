@@ -1,9 +1,8 @@
 import config.AppConfig;
 import core.ControlBolt;
-import core.ModelBolt;
 import core.FeatureComputeBolt;
+import core.ModelBolt;
 import core.WindowsBolt;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.storm.Config;
 import org.apache.storm.LocalCluster;
 import org.apache.storm.StormSubmitter;
@@ -26,11 +25,14 @@ public class Run {
         }
         else {
             final TopologyBuilder tp = new TopologyBuilder();
+
             KafkaSpoutConfig<String, String> kafkaSpoutConfig = KafkaSpoutConfig.builder(
                     String.format("%s:%s", AppConfig.DefaultKafkaConfig.host, AppConfig.DefaultKafkaConfig.port),
-                    AppConfig.DefaultKafkaConfig.topic).
-                    setProp(ConsumerConfig.GROUP_ID_CONFIG, AppConfig.DefaultKafkaConfig.groupId)
+                    AppConfig.DefaultKafkaConfig.topic)
+                    .setProp(AppConfig.DefaultKafkaConfig.kafkaProperties())
+                    .setProcessingGuarantee(KafkaSpoutConfig.ProcessingGuarantee.AT_LEAST_ONCE)
                     .build();
+
             KafkaSpout<String, String> kafkaSpout = new KafkaSpout<>(kafkaSpoutConfig);
             tp.setSpout("kafka", new KafkaSpout<String, String>(kafkaSpoutConfig),1);
             tp.setBolt("window", new WindowsBolt(), 1).shuffleGrouping("kafka");
