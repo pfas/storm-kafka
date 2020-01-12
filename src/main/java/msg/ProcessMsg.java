@@ -8,7 +8,7 @@ public class ProcessMsg implements Serializable {
     private String model;
     private int windowSize;
     private int blockSize;
-    private Queue<Object> window;
+    private Queue<IoTMsg> window;
 
     public String getModel() {
         return model;
@@ -34,11 +34,11 @@ public class ProcessMsg implements Serializable {
         this.blockSize = blockSize;
     }
 
-    public Queue<Object> getWindow() {
+    public Queue<IoTMsg> getWindow() {
         return window;
     }
 
-    public void setWindow(Queue<Object> window) {
+    public void setWindow(Queue<IoTMsg> window) {
         this.window = window;
     }
 }

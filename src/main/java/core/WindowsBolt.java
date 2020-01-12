@@ -1,6 +1,8 @@
 package core;
 
+import msg.IoTMsg;
 import msg.ProcessMsg;
+import okhttp3.ResponseBody;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.OutputFieldsDeclarer;
@@ -10,7 +12,6 @@ import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
@@ -28,7 +29,7 @@ public class WindowsBolt extends BaseRichBolt {
     private Map<String, Object> map;
     private TopologyContext topologyContext;
     private OutputCollector outputCollector;
-    private Queue<Object> window = new LinkedList<Object>();
+    private Queue<IoTMsg> window = new LinkedList<>();
 
     public void prepare(Map<String, Object> map, TopologyContext topologyContext, OutputCollector outputCollector) {
         this.map = map;
@@ -37,47 +38,45 @@ public class WindowsBolt extends BaseRichBolt {
     }
 
     private int[] getWindowSize(String model) {
-        /**
-         *
-         * TODO ： 从模型处获取窗口大小和切块大小
-         *
-         *  try {
-         *      ResponseBody responseBody = AppUtil.doGet(AppConfig.ModelServerConfig.modelUrl, new HashMap<>(), new HashMap<>());
-         *      TODO: 解析 Responsebody to int[]
-         *  } catch (IOException e) {
-         *      logger.error(e.getMessage());
-         *      e.printStackTrace();
-         *  }
-         */
-
-
-        return new int[] {10, 1};
+//        try {
+//            Map<String, Object> query = new HashMap<>();
+//            query.put("stage", model);
+//            ResponseBody responseBody = AppUtil.doGet(
+//                    AppConfig.ModelServerConfig.modelConfigUrl,
+//                    new HashMap<>(),
+//                    query
+//            );
+//            String s = responseBody.string();
+//            System.out.println("responseBody:" + s);
+//        } catch (IOException e) {
+//            logger.error(e.getMessage());
+//            e.printStackTrace();
+//        }
+        return new int[]{50, 5};
     }
 
 
     /**
-     *  解析 tuple 里面的参数信息
+     * 解析 tuple 里面的参数信息
+     *
      * @param tuple
      * @return
      */
-    public Object parseTuple(Tuple tuple) {
-        //TODO : 解析 kafka 信息
-        String msg = (String) tuple.getValue(4);
-
-        return msg;
+    public IoTMsg parseTuple(Tuple tuple) {
+        // TODO : 解析 kafka 信息
+        // String msg = (String) tuple.getValue(4);
+        // System.out.println(msg);
+        return new IoTMsg();
     }
 
 
-    public String determineModel (Object o) {
-
-        /**
-         * TODO 确定模型类型
-         */
-        return  "";
+    public String determineModel(Object o) {
+        // TODO determineModel
+        return "head";
     }
 
     public void execute(Tuple tuple) {
-        Object msg = parseTuple(tuple);
+        IoTMsg msg = parseTuple(tuple);
         String model = determineModel(tuple);
         int[] modelConfig = getWindowSize(model);
 
@@ -96,8 +95,7 @@ public class WindowsBolt extends BaseRichBolt {
             processMsg.setWindow(window);
             outputCollector.emit(new Values(processMsg));
         }
-//        outputCollector.ack(tuple);
-
+        outputCollector.ack(tuple);
     }
 
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {

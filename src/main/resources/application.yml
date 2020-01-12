@@ -12,8 +12,8 @@ kafka-spout:
 model-server:
   host: localhost
   port: 80
-  model-url: https://localhost:80
-  model-config-url: https://localhost:80
+  model-url: http://localhost:5000/api
+  model-config-url: http://localhost:5000/api/load_model_config
 
 control-server:
   host: localhost
