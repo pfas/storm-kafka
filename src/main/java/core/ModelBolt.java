@@ -30,8 +30,6 @@ public class ModelBolt extends BaseRichBolt {
     }
 
     public ControlMsg callModel(Object features) {
-        //
-
         ControlMsg controlMsg = new ControlMsg();
         /**
          * TODO : 调用模型， 并将模型结果放到 ControlMsg 里
@@ -53,13 +51,14 @@ public class ModelBolt extends BaseRichBolt {
 
     /**
      * 从 FeatureComputeBolt 获取特征计算结果，调用模型预测，将控制信息传递给下游
+     *
      * @param tuple
      */
     public void execute(Tuple tuple) {
-       ModelMsg modelMsg = (ModelMsg) tuple.getValue(0);
-       ControlMsg controlMsg = callModel(modelMsg);
-       outputCollector.emit(new Values(controlMsg));
-       outputCollector.ack(tuple);
+        ModelMsg modelMsg = (ModelMsg) tuple.getValue(0);
+        ControlMsg controlMsg = callModel(modelMsg);
+        outputCollector.emit(new Values(controlMsg));
+        outputCollector.ack(tuple);
 
     }
 

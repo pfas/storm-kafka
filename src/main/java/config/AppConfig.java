@@ -80,7 +80,7 @@ public class AppConfig {
             host = (String) map.getOrDefault("host", null);
             port = (int) map.getOrDefault("port", null);
             modelUrl = (String) map.getOrDefault("model-url", null);
-            modelUrl = (String) map.getOrDefault("model-config-url", null);
+            modelConfigUrl = (String) map.getOrDefault("model-config-url", null);
         }
     }
 
