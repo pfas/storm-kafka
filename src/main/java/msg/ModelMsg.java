@@ -9,6 +9,7 @@ public class ModelMsg implements Serializable {
     private String batch;
     private long index;
     private String brand;
+    private String stage;
     private List<Float> mean;
     private List<Float> std;
     private List<Float> integral;
@@ -96,5 +97,13 @@ public class ModelMsg implements Serializable {
 
     public void setKurtosis(List<Float> kurtosis) {
         this.kurtosis = kurtosis;
+    }
+
+    public String getStage() {
+        return stage;
+    }
+
+    public void setStage(String stage) {
+        this.stage = stage;
     }
 }

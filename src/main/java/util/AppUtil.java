@@ -9,7 +9,7 @@ import java.util.Map;
 public class AppUtil {
 
 
-    public static ResponseBody doPost(String url, String json) throws IOException {
+    public static Response doPost(String url, String json) throws IOException {
         OkHttpClient client = new OkHttpClient();
         final MediaType JSON = MediaType.get("application/json; charset=utf-8");
         RequestBody body = RequestBody.create(json, JSON);
@@ -17,12 +17,10 @@ public class AppUtil {
                 .url(url)
                 .post(body)
                 .build();
-        try (Response response = client.newCall(request).execute()) {
-            return response.body();
-        }
+        return client.newCall(request).execute();
     }
 
-    public static ResponseBody doGet(String url, Map<String, Object> headers, Map<String, Object> query) throws IOException {
+    public static Response doGet(String url, Map<String, Object> headers, Map<String, Object> query) throws IOException {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(url)
@@ -47,8 +45,6 @@ public class AppUtil {
 
         builder.url(urlBuilder.build()).headers(headerBuilder.build());
 
-        try (Response response = client.newCall(builder.build()).execute()) {
-            return response.body();
-        }
+        return client.newCall(builder.build()).execute();
     }
 }

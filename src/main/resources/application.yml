@@ -1,6 +1,6 @@
 app:
   app-name: MachineLearning
-  env: local
+  env: test
 
 kafka-spout:
   host: kfan01.chinaeast2.cloudapp.chinacloudapi.cn
@@ -12,7 +12,7 @@ kafka-spout:
 model-server:
   host: localhost
   port: 80
-  model-url: http://localhost:5000/api
+  model-url: http://localhost:5000/api/predict
   model-config-url: http://localhost:5000/api/load_model_config
 
 control-server:

@@ -1,7 +1,9 @@
 package core;
 
+import config.AppConfig;
 import msg.ControlMsg;
 import msg.ModelMsg;
+import okhttp3.Response;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.OutputFieldsDeclarer;
@@ -9,10 +11,15 @@ import org.apache.storm.topology.base.BaseRichBolt;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import util.AppUtil;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 
 public class ModelBolt extends BaseRichBolt {
@@ -29,23 +36,30 @@ public class ModelBolt extends BaseRichBolt {
         this.outputCollector = outputCollector;
     }
 
-    public ControlMsg callModel(Object features) {
+    public ControlMsg callModel(ModelMsg msg) {
         ControlMsg controlMsg = new ControlMsg();
-        /**
-         * TODO : 调用模型， 并将模型结果放到 ControlMsg 里
-         *
-         *  Map<Object, Object> params = new HashMap<>();
-         *  try {
-         *      ResponseBody responseBody = AppUtil.doGet(AppConfig.ModelServerConfig.modelUrl, new HashMap<>(), map);
-         *      // TODO: 解析 responsebody to ControlMsg
-         *  } catch (IOException e) {
-         *      logger.error(e.getMessage());
-         *      e.printStackTrace();
-         *  }
-         *
-         */
+        Map<String, Object> params = new HashMap<>();
+        params.put("time", msg.getTime());
+        params.put("brand", msg.getBrand());
+        params.put("batch", msg.getBatch());
+        params.put("index", msg.getIndex());
+        params.put("stage", msg.getStage());
+        params.put("features", msg.generate());
 
-
+        try {
+            Response response = AppUtil.doPost(AppConfig.ModelServerConfig.modelUrl, String.valueOf(new JSONObject(params)));
+            JSONObject json = new JSONObject(Objects.requireNonNull(response.body()).string());
+            controlMsg.setBatch(json.getString("batch"));
+            controlMsg.setBrand(json.getString("brand"));
+            controlMsg.setTime(json.getLong("time"));
+            controlMsg.setVersion(json.getString("version"));
+            controlMsg.setDeviceStatus(json.getString("deviceStatus"));
+            controlMsg.setTempRegion1((float) json.getDouble("tempRegion1"));
+            controlMsg.setTempRegion2((float) json.getDouble("tempRegion2"));
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+            e.printStackTrace();
+        }
         return controlMsg;
     }
 

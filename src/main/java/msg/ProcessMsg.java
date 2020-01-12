@@ -5,17 +5,22 @@ import java.util.Queue;
 
 public class ProcessMsg implements Serializable {
 
-    private String model;
+    private String stage;
+    private String brand;
+    private String batch;
+    private long time;
+    private long index;
+
     private int windowSize;
     private int blockSize;
     private Queue<IoTMsg> window;
 
-    public String getModel() {
-        return model;
+    public String getStage() {
+        return stage;
     }
 
-    public void setModel(String model) {
-        this.model = model;
+    public void setStage(String stage) {
+        this.stage = stage;
     }
 
     public int getWindowSize() {
@@ -40,5 +45,37 @@ public class ProcessMsg implements Serializable {
 
     public void setWindow(Queue<IoTMsg> window) {
         this.window = window;
+    }
+
+    public String getBrand() {
+        return brand;
+    }
+
+    public void setBrand(String brand) {
+        this.brand = brand;
+    }
+
+    public String getBatch() {
+        return batch;
+    }
+
+    public void setBatch(String batch) {
+        this.batch = batch;
+    }
+
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
+    }
+
+    public long getIndex() {
+        return index;
+    }
+
+    public void setIndex(long index) {
+        this.index = index;
     }
 }
