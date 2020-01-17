@@ -93,14 +93,14 @@ public class FeatureUtil {
         for (IoTMsg msg : split) {
             Double[] msgArray = msg.generate();
             for (int i = 0; i < msgArray.length; i++) {
-                numerator[i] +=  Math.pow(msgArray[i] - meanArray[i], 3);
-                denominator[i] +=  Math.pow(msgArray[i] - meanArray[i], 2);
+                numerator[i] += Math.pow(msgArray[i] - meanArray[i], 3);
+                denominator[i] += Math.pow(msgArray[i] - meanArray[i], 2);
             }
         }
 
         for (int i = 0; i < numerator.length; i++) {
             numerator[i] = numerator[i] / size;
-            denominator[i] =  Math.pow(denominator[i] / size, 1.5);
+            denominator[i] = Math.pow(denominator[i] / size, 1.5);
         }
         return new IoTMsg(
                 checkNAN(numerator[0] / denominator[0]),
