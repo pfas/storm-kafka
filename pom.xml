@@ -58,6 +58,18 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>uk.ac.imperial</groupId>
+            <artifactId>PIPE-gui</artifactId>
+            <version>5.0.3-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>uk.ac.imperial</groupId>
+            <artifactId>PIPE-gui</artifactId>
+            <version>5.0.3-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
 

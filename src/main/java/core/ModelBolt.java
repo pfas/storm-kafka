@@ -46,6 +46,7 @@ public class ModelBolt extends BaseRichBolt {
         params.put("stage", msg.getStage());
         params.put("features", msg.generate());
 
+        System.out.println(msg.generate());
         try {
             Response response = AppUtil.doPost(AppConfig.ModelServerConfig.modelUrl, String.valueOf(new JSONObject(params)));
             JSONObject json = new JSONObject(Objects.requireNonNull(response.body()).string());
@@ -71,9 +72,16 @@ public class ModelBolt extends BaseRichBolt {
     public void execute(Tuple tuple) {
         ModelMsg modelMsg = (ModelMsg) tuple.getValue(0);
         ControlMsg controlMsg = callModel(modelMsg);
+
+        saveControlMsg(controlMsg);
+
         outputCollector.emit(new Values(controlMsg));
         outputCollector.ack(tuple);
 
+    }
+
+    private void saveControlMsg(ControlMsg controlMsg) {
+        // TODO 保存控制消息
     }
 
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {

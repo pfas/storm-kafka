@@ -1,7 +1,9 @@
 package core;
 
+import gherkin.deps.com.google.gson.Gson;
 import config.AppConfig;
 import msg.IoTMsg;
+import msg.OriginalMsg;
 import msg.ProcessMsg;
 import okhttp3.Response;
 import org.apache.storm.task.OutputCollector;
@@ -30,6 +32,10 @@ public class WindowsBolt extends BaseRichBolt {
     private TopologyContext topologyContext;
     private OutputCollector outputCollector;
     private Queue<IoTMsg> window = new LinkedList<>();
+    private Gson gson = new Gson();
+
+    private String currentBatch = null;
+    private long startIndex = 0;
 
     public void prepare(Map<String, Object> map, TopologyContext topologyContext, OutputCollector outputCollector) {
         this.map = map;
@@ -52,41 +58,60 @@ public class WindowsBolt extends BaseRichBolt {
             logger.error(e.getMessage());
             e.printStackTrace();
         }
-        return new int[]{0, 0};
+        return new int[]{50, 5};
     }
 
 
     /**
      * 解析 tuple 里面的参数信息
-     *
-     * @param tuple
-     * @return
+     * 得到 OriginalMsg
      */
-    public IoTMsg parseTuple(Tuple tuple) {
-        // TODO : 解析 kafka 信息
-        // String msg = (String) tuple.getValue(4);
-        // System.out.println(msg);
-        return new IoTMsg();
+    public OriginalMsg parseTuple(Tuple tuple) {
+        String str = tuple.getSourceComponent();
+        return gson.fromJson(str, OriginalMsg.class);
     }
 
 
-    public String determineStage(Tuple tuple) {
-        // TODO determineStage
-        return "produce";
+    /**
+     * 根据 index 判断 stage
+     */
+    public String determineStage(OriginalMsg msg) {
+        if (startIndex < 200) {
+            return "head";
+        } else if (startIndex < 400) {
+            return "transition";
+        } else {
+            return "produce";
+        }
     }
 
-    private long determineIndex(Tuple tuple) {
-        // TODO determineIndex
-        return 0;
+    /**
+     * TODO: untested
+     * 判断当前Msg在整个批次中的Index
+     * 1. 如果当前Msg的流量累计量为0 -> 0
+     * 2. 之前没有批次在生产, 或者当前批次和之前批次不一样 -> 0
+     */
+    private long determineIndex(OriginalMsg msg) {
+        if (msg.isBatchStart() || currentBatch == null || !currentBatch.equals(msg.getBatch())) {
+            currentBatch = msg.getBatch();
+            startIndex = 0;
+            return startIndex++;
+        }
+        return startIndex++;
     }
 
     public void execute(Tuple tuple) {
-        IoTMsg msg = parseTuple(tuple);
-        String stage = determineStage(tuple);
-        long index = determineIndex(tuple);
-        String brand = "";
-        String batch = "";
-        long time = 0;
+        OriginalMsg originalMsg = parseTuple(tuple);
+        IoTMsg msg = new IoTMsg(originalMsg.generate());
+
+        saveIoTMsg(msg);
+
+        String stage = determineStage(originalMsg);
+        long index = determineIndex(originalMsg);
+        String brand = originalMsg.getBrand();
+        String batch = originalMsg.getBatch();
+        long time = originalMsg.getTimestamp();
+
         int[] modelConfig = getWindowSize(stage);
 
         window.add(msg);
@@ -106,6 +131,10 @@ public class WindowsBolt extends BaseRichBolt {
             outputCollector.emit(new Values(processMsg));
         }
         outputCollector.ack(tuple);
+    }
+
+    private void saveIoTMsg(IoTMsg msg) {
+        // TODO 保存原始数据
     }
 
 

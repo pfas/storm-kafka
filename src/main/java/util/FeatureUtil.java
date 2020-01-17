@@ -8,12 +8,12 @@ import java.util.Arrays;
 public class FeatureUtil {
 
     public static IoTMsg calcMean(IoTMsg[] split) {
-        Float[] result = new Float[8];
-        Arrays.fill(result, 0f);
+        Double[] result = new Double[8];
+        Arrays.fill(result, 0d);
         int size = split.length;
 
         for (IoTMsg msg : split) {
-            Float[] msgArray = msg.generate();
+            Double[] msgArray = msg.generate();
             for (int i = 0; i < msgArray.length; i++) {
                 result[i] += msgArray[i];
             }
@@ -31,39 +31,39 @@ public class FeatureUtil {
     }
 
     public static IoTMsg calcStd(IoTMsg[] split, IoTMsg mean) {
-        Float[] result = new Float[8];
-        Arrays.fill(result, 0f);
+        Double[] result = new Double[8];
+        Arrays.fill(result, 0d);
 
-        Float[] meanArray = mean.generate();
+        Double[] meanArray = mean.generate();
         int size = split.length;
 
         for (IoTMsg msg : split) {
-            Float[] msgArray = msg.generate();
+            Double[] msgArray = msg.generate();
             for (int i = 0; i < msgArray.length; i++) {
-                result[i] += (float) Math.pow(msgArray[i] - meanArray[i], 2);
+                result[i] += Math.pow(msgArray[i] - meanArray[i], 2);
             }
         }
         return new IoTMsg(
-                (float) Math.sqrt(result[0] / size),
-                (float) Math.sqrt(result[1] / size),
-                (float) Math.sqrt(result[2] / size),
-                (float) Math.sqrt(result[3] / size),
-                (float) Math.sqrt(result[4] / size),
-                (float) Math.sqrt(result[5] / size),
-                (float) Math.sqrt(result[6] / size),
-                (float) Math.sqrt(result[7] / size)
+                Math.sqrt(result[0] / size),
+                Math.sqrt(result[1] / size),
+                Math.sqrt(result[2] / size),
+                Math.sqrt(result[3] / size),
+                Math.sqrt(result[4] / size),
+                Math.sqrt(result[5] / size),
+                Math.sqrt(result[6] / size),
+                Math.sqrt(result[7] / size)
         );
 
 
     }
 
     public static IoTMsg calcIntegral(IoTMsg[] split) {
-        Float[] result = new Float[8];
-        Arrays.fill(result, 0f);
+        Double[] result = new Double[8];
+        Arrays.fill(result, 0d);
         int size = split.length;
 
         for (IoTMsg msg : split) {
-            Float[] msgArray = msg.generate();
+            Double[] msgArray = msg.generate();
             for (int i = 0; i < msgArray.length; i++) {
                 result[i] += msgArray[i];
             }
@@ -82,25 +82,25 @@ public class FeatureUtil {
 
     public static IoTMsg calcSkew(IoTMsg[] split, IoTMsg mean) {
         // TODO https://www.cnblogs.com/jiaxin359/p/8977333.html
-        Float[] numerator = new Float[8];
-        Float[] denominator = new Float[8];
-        Float[] meanArray = mean.generate();
+        Double[] numerator = new Double[8];
+        Double[] denominator = new Double[8];
+        Double[] meanArray = mean.generate();
 
         int size = split.length;
-        Arrays.fill(numerator, 0f);
-        Arrays.fill(denominator, 0f);
+        Arrays.fill(numerator, 0d);
+        Arrays.fill(denominator, 0d);
 
         for (IoTMsg msg : split) {
-            Float[] msgArray = msg.generate();
+            Double[] msgArray = msg.generate();
             for (int i = 0; i < msgArray.length; i++) {
-                numerator[i] += (float) Math.pow(msgArray[i] - meanArray[i], 3);
-                denominator[i] += (float) Math.pow(msgArray[i] - meanArray[i], 2);
+                numerator[i] +=  Math.pow(msgArray[i] - meanArray[i], 3);
+                denominator[i] +=  Math.pow(msgArray[i] - meanArray[i], 2);
             }
         }
 
         for (int i = 0; i < numerator.length; i++) {
             numerator[i] = numerator[i] / size;
-            denominator[i] = (float) Math.pow(denominator[i] / size, 1.5);
+            denominator[i] =  Math.pow(denominator[i] / size, 1.5);
         }
         return new IoTMsg(
                 checkNAN(numerator[0] / denominator[0]),
@@ -116,25 +116,25 @@ public class FeatureUtil {
 
     public static IoTMsg calcKurtosis(IoTMsg[] split, IoTMsg mean) {
         // TODO https://www.cnblogs.com/jiaxin359/p/8977333.html
-        Float[] numerator = new Float[8];
-        Float[] denominator = new Float[8];
-        Float[] meanArray = mean.generate();
+        Double[] numerator = new Double[8];
+        Double[] denominator = new Double[8];
+        Double[] meanArray = mean.generate();
 
         int size = split.length;
-        Arrays.fill(numerator, 0f);
-        Arrays.fill(denominator, 0f);
+        Arrays.fill(numerator, 0d);
+        Arrays.fill(denominator, 0d);
 
         for (IoTMsg msg : split) {
-            Float[] msgArray = msg.generate();
+            Double[] msgArray = msg.generate();
             for (int i = 0; i < msgArray.length; i++) {
-                numerator[i] += (float) Math.pow(msgArray[i] - meanArray[i], 4);
-                denominator[i] += (float) Math.pow(msgArray[i] - meanArray[i], 2);
+                numerator[i] += Math.pow(msgArray[i] - meanArray[i], 4);
+                denominator[i] += Math.pow(msgArray[i] - meanArray[i], 2);
             }
         }
 
         for (int i = 0; i < numerator.length; i++) {
             numerator[i] = numerator[i] / size;
-            denominator[i] = (float) Math.pow(denominator[i] / size, 2);
+            denominator[i] = Math.pow(denominator[i] / size, 2);
         }
         return new IoTMsg(
                 checkNAN(numerator[0] / denominator[0]) - 3,
@@ -148,7 +148,7 @@ public class FeatureUtil {
         );
     }
 
-    public static Float checkNAN(Float num) {
-        return Float.isNaN(num) ? 0f : num;
+    public static Double checkNAN(Double num) {
+        return Double.isNaN(num) ? 0d : num;
     }
 }

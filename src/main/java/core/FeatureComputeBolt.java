@@ -50,11 +50,11 @@ public class FeatureComputeBolt extends BaseRichBolt {
      * 构造为模型需要的特征
      */
     private void merge(ModelMsg modelMsg, List<List<IoTMsg>> features) {
-        List<Float> meanList = new ArrayList<>();
-        List<Float> stdList = new ArrayList<>();
-        List<Float> integralList = new ArrayList<>();
-        List<Float> skewList = new ArrayList<>();
-        List<Float> kurtosisList = new ArrayList<>();
+        List<Double> meanList = new ArrayList<>();
+        List<Double> stdList = new ArrayList<>();
+        List<Double> integralList = new ArrayList<>();
+        List<Double> skewList = new ArrayList<>();
+        List<Double> kurtosisList = new ArrayList<>();
         for (List<IoTMsg> feature : features) {
             IoTMsg mean = feature.get(0);
             IoTMsg std = feature.get(1);
@@ -121,12 +121,8 @@ public class FeatureComputeBolt extends BaseRichBolt {
     public void execute(Tuple tuple) {
         ProcessMsg processMsg = (ProcessMsg) tuple.getValue(0);
 
-        ModelMsg modelMsg;
-        if ("test".equals(AppConfig.AppGlobalConfig.env)) {
-            modelMsg = computeFeature(getMockData(), processMsg.getWindowSize(), processMsg.getBlockSize());
-        } else {
-            modelMsg = computeFeature(processMsg.getWindow(), processMsg.getWindowSize(), processMsg.getBlockSize());
-        }
+        ModelMsg modelMsg = computeFeature(processMsg.getWindow(), processMsg.getWindowSize(), processMsg.getBlockSize());
+        // ModelMsg modelMsg = computeFeature(getMockData(), processMsg.getWindowSize(), processMsg.getBlockSize());
 
         modelMsg.setStage(processMsg.getStage());
         modelMsg.setBrand(processMsg.getBrand());
@@ -134,8 +130,14 @@ public class FeatureComputeBolt extends BaseRichBolt {
         modelMsg.setBatch(processMsg.getBatch());
         modelMsg.setTime(processMsg.getTime());
 
+        saveModelMsg(modelMsg);
+
         outputCollector.emit(new Values(modelMsg));
         outputCollector.ack(tuple);
+    }
+
+    private void saveModelMsg(ModelMsg modelMsg) {
+        // TODO 保存处理后的Msg
     }
 
 
@@ -143,58 +145,58 @@ public class FeatureComputeBolt extends BaseRichBolt {
         outputFieldsDeclarer.declare(new Fields("features"));
     }
 
-    private static List<IoTMsg> getMockData() {
-        List<IoTMsg> list = new ArrayList<>();
-        list.add(new IoTMsg(new Float[]{-10.66f, 0.390567f, 19.10618f, -37.24573f, 131.4467f, 133.5563f, 118.8188f, 119.0817f}));
-        list.add(new IoTMsg(new Float[]{-10.66f, 0.3917936f, 19.10294f, -36.03656f, 131.5355f, 133.5365f, 118.789f, 119.0544f}));
-        list.add(new IoTMsg(new Float[]{-10.66f, 0.39186809999999994f, 19.09534f, -36.36182f, 131.6285f, 133.517f, 118.7584f, 119.0544f}));
-        list.add(new IoTMsg(new Float[]{-10.66f, 0.3925209f, 19.09828f, -36.14838f, 131.7247f, 133.4983f, 118.7219f, 119.028f}));
-        list.add(new IoTMsg(new Float[]{-10.66f, 0.3935966f, 19.0913f, -34.99872f, 131.8171f, 133.4808f, 118.6879f, 119.0018f}));
-        list.add(new IoTMsg(new Float[]{-10.66f, 0.3935158f, 19.08923f, -34.17712f, 131.9119f, 133.4808f, 118.6502f, 118.9757f}));
-        list.add(new IoTMsg(new Float[]{-10.66f, 0.39336220000000005f, 19.09511f, -33.95856f, 132.002f, 133.4636f, 118.6066f, 118.95f}));
-        list.add(new IoTMsg(new Float[]{-10.66f, 0.3934222f, 19.09287f, -37.33533f, 132.0914f, 133.4468f, 118.5597f, 118.9253f}));
-        list.add(new IoTMsg(new Float[]{-10.66f, 0.3938643f, 19.10143f, -40.27594f, 132.1814f, 133.5018f, 118.5081f, 118.9253f}));
-        list.add(new IoTMsg(new Float[]{-10.66f, 0.3950312f, 19.11732f, -40.57544f, 132.2754f, 133.5628f, 118.4511f, 118.902f}));
-        list.add(new IoTMsg(new Float[]{-10.66f, 0.3962857f, 19.13039f, -39.43634f, 132.4177f, 133.6252f, 118.3662f, 118.8592f}));
-        list.add(new IoTMsg(new Float[]{-10.66f, 0.3966686f, 19.13431f, -38.67712f, 132.4684f, 133.6252f, 118.3662f, 118.8592f}));
-        list.add(new IoTMsg(new Float[]{-10.66f, 0.3961982f, 19.13636f, -37.90149f, 132.5706f, 133.6861f, 118.3096f, 118.8592f}));
-        list.add(new IoTMsg(new Float[]{-10.66f, 0.3959692f, 19.13407f, -38.64209f, 132.668f, 133.7445f, 118.208f, 118.8192f}));
-        list.add(new IoTMsg(new Float[]{-10.66f, 0.3967118f, 19.131f, -39.16083f, 132.7705f, 133.7985f, 118.1487f, 118.8192f}));
-        list.add(new IoTMsg(new Float[]{-10.66f, 0.3967991f, 19.12304f, -39.08484f, 132.8776f, 133.8463f, 118.0799f, 118.8002f}));
-        list.add(new IoTMsg(new Float[]{-10.66f, 0.3967046f, 19.11835f, -38.4118f, 132.9787f, 133.8904f, 118.0117f, 118.7809f}));
-        list.add(new IoTMsg(new Float[]{-10.66f, 0.3974093f, 19.10254f, -35.63397f, 133.0792f, 133.8904f, 117.9779f, 118.7617f}));
-        list.add(new IoTMsg(new Float[]{-10.66f, 0.3975635f, 19.09483f, -35.58679f, 133.1754f, 133.9305f, 117.8748f, 118.7431f}));
-        list.add(new IoTMsg(new Float[]{-10.66f, 0.3966887f, 19.09869f, -38.23877f, 133.2652f, 133.9676f, 117.8025f, 118.7256f}));
-        list.add(new IoTMsg(new Float[]{-10.66f, 0.3969766f, 19.10436f, -39.44427f, 133.3629f, 134.0015f, 117.7309f, 118.7256f}));
-        list.add(new IoTMsg(new Float[]{-10.66f, 0.3983358f, 19.09719f, -37.98047f, 133.4648f, 134.0328f, 117.6932f, 118.7085f}));
-        list.add(new IoTMsg(new Float[]{-10.66f, 0.3983485f, 19.0858f, -36.78503f, 133.5604f, 134.0634f, 117.6129f, 118.6918f}));
-        list.add(new IoTMsg(new Float[]{-10.66f, 0.3978139f, 19.09092f, -32.84259f, 133.6593f, 134.0634f, 117.5011f, 118.6771f}));
-        list.add(new IoTMsg(new Float[]{-10.66f, 0.3978643f, 19.09179f, -32.65704f, 133.7545f, 134.0947f, 117.4237f, 118.6553f}));
-        list.add(new IoTMsg(new Float[]{-10.66f, 0.3988149f, 19.07274f, -33.69733f, 133.8405f, 134.125f, 117.3438f, 118.6335f}));
-        list.add(new IoTMsg(new Float[]{-10.66f, 0.3998042f, 19.05736f, -33.63373f, 133.9232f, 134.1529f, 117.3047f, 118.6335f}));
-        list.add(new IoTMsg(new Float[]{-10.66f, 0.4004687f, 19.05311f, -36.7984f, 134.0056f, 134.1763f, 117.1964f, 118.6119f}));
-        list.add(new IoTMsg(new Float[]{-10.66f, 0.398584f, 19.06423f, -35.14539f, 134.1211f, 134.1963f, 117.0936f, 118.5678f}));
-        list.add(new IoTMsg(new Float[]{-10.66f, 0.3993099f, 19.06591f, -33.87683f, 134.2014f, 134.2146f, 117.0603f, 118.5678f}));
-        list.add(new IoTMsg(new Float[]{-10.66f, 0.4001607f, 19.07098f, -33.3526f, 134.2736f, 134.2312f, 116.9553f, 118.5471f}));
-        list.add(new IoTMsg(new Float[]{-10.66f, 0.4001462f, 19.07479f, -33.9978f, 134.3081f, 134.2312f, 116.9553f, 118.5471f}));
-        list.add(new IoTMsg(new Float[]{-10.67f, 0.40013059999999995f, 19.08786f, -35.16138f, 134.3788f, 134.2463f, 116.8491f, 118.5275f}));
-        list.add(new IoTMsg(new Float[]{-10.67f, 0.4009608f, 19.10514f, -38.0509f, 134.473f, 134.2599f, 116.7448f, 118.4902f}));
-        list.add(new IoTMsg(new Float[]{-10.67f, 0.4004962f, 19.10489f, -38.17627f, 134.5295f, 134.2738f, 116.6788f, 118.4729f}));
-        list.add(new IoTMsg(new Float[]{-10.66f, 0.4005843f, 19.10673f, -35.11194f, 134.5855f, 134.2875f, 116.6197f, 118.4729f}));
-        list.add(new IoTMsg(new Float[]{-10.649999999999999f, 0.40053790000000006f, 19.10951f, -33.95453f, 134.6357f, 134.2995f, 116.5629f, 118.4558f}));
-        list.add(new IoTMsg(new Float[]{-10.579999999999998f, 0.4005851f, 19.11929f, -34.87567f, 134.6809f, 134.3107f, 116.5301f, 118.4737f}));
-        list.add(new IoTMsg(new Float[]{-10.5f, 0.40041809999999994f, 19.13594f, -35.61298f, 134.7256f, 134.3107f, 116.4369f, 118.5312f}));
-        list.add(new IoTMsg(new Float[]{-10.36f, 0.4001424f, 19.1466f, -38.61945f, 134.7633f, 134.3203f, 116.4095f, 118.5312f}));
-        list.add(new IoTMsg(new Float[]{-10.229999999999999f, 0.3995191f, 19.15343f, -41.18134f, 134.799f, 134.327f, 116.3566f, 118.59299999999999f}));
-        list.add(new IoTMsg(new Float[]{-9.92f, 0.3988888f, 19.15899f, -41.29034f, 134.8316f, 134.3317f, 116.3066f, 118.6552f}));
-        list.add(new IoTMsg(new Float[]{-9.16f, 0.3981453f, 19.11916f, -42.44208f, 134.8687f, 134.3358f, 116.2307f, 118.7153f}));
-        list.add(new IoTMsg(new Float[]{-8.889999999999999f, 0.3985295f, 19.10333f, -43.32147f, 134.881f, 134.3392f, 116.206f, 118.7722f}));
-        list.add(new IoTMsg(new Float[]{-8.309999999999999f, 0.3992882f, 19.08613f, -45.37762f, 134.9033f, 134.3392f, 116.1595f, 118.7722f}));
-        list.add(new IoTMsg(new Float[]{-7.819999999999999f, 0.3999003f, 19.06352f, -45.42078f, 134.9187f, 134.3428f, 116.1217f, 118.8234f}));
-        list.add(new IoTMsg(new Float[]{-7.279999999999999f, 0.40041609999999994f, 19.05226f, -41.09686f, 134.9331f, 134.3476f, 116.091f, 118.8694f}));
-        list.add(new IoTMsg(new Float[]{-6.799999999999999f, 0.4002319f, 19.06224f, -38.0658f, 134.9457f, 134.3537f, 116.0745f, 118.9109f}));
-        list.add(new IoTMsg(new Float[]{-6.339999999999999f, 0.399815f, 19.07063f, -39.04053f, 134.9539f, 134.3601f, 116.055f, 118.9493f}));
-        list.add(new IoTMsg(new Float[]{-5.909998999999999f, 0.4000592f, 19.07561f, -41.19458f, 134.9624f, 134.3657f, 116.0455f, 118.9851f}));
-        return list;
-    }
+//    private static List<IoTMsg> getMockData() {
+//        List<IoTMsg> list = new ArrayList<>();
+//        list.add(new IoTMsg(new Double[]{-10.66, 0.390567, 19.10618, -37.24573, 131.4467, 133.5563, 118.8188, 119.0817}));
+//        list.add(new IoTMsg(new Double[]{-10.66, 0.3917936, 19.10294, -36.03656, 131.5355, 133.5365, 118.789, 119.0544}));
+//        list.add(new IoTMsg(new Double[]{-10.66, 0.39186809999999994, 19.09534, -36.36182, 131.6285, 133.517, 118.7584, 119.0544}));
+//        list.add(new IoTMsg(new Double[]{-10.66, 0.3925209, 19.09828, -36.14838, 131.7247, 133.4983, 118.7219, 119.028}));
+//        list.add(new IoTMsg(new Double[]{-10.66, 0.3935966, 19.0913, -34.99872, 131.8171, 133.4808, 118.6879, 119.0018}));
+//        list.add(new IoTMsg(new Double[]{-10.66, 0.3935158, 19.08923, -34.17712, 131.9119, 133.4808, 118.6502, 118.9757}));
+//        list.add(new IoTMsg(new Double[]{-10.66, 0.39336220000000005, 19.09511, -33.95856, 132.002, 133.4636, 118.6066, 118.95}));
+//        list.add(new IoTMsg(new Double[]{-10.66, 0.3934222, 19.09287, -37.33533, 132.0914, 133.4468, 118.5597, 118.9253}));
+//        list.add(new IoTMsg(new Double[]{-10.66, 0.3938643, 19.10143, -40.27594, 132.1814, 133.5018, 118.5081, 118.9253}));
+//        list.add(new IoTMsg(new Double[]{-10.66, 0.3950312, 19.11732, -40.57544, 132.2754, 133.5628, 118.4511, 118.902}));
+//        list.add(new IoTMsg(new Double[]{-10.66, 0.3962857, 19.13039, -39.43634, 132.4177, 133.6252, 118.3662, 118.8592}));
+//        list.add(new IoTMsg(new Double[]{-10.66, 0.3966686, 19.13431, -38.67712, 132.4684, 133.6252, 118.3662, 118.8592}));
+//        list.add(new IoTMsg(new Double[]{-10.66, 0.3961982, 19.13636, -37.90149, 132.5706, 133.6861, 118.3096, 118.8592}));
+//        list.add(new IoTMsg(new Double[]{-10.66, 0.3959692, 19.13407, -38.64209, 132.668, 133.7445, 118.208, 118.8192}));
+//        list.add(new IoTMsg(new Double[]{-10.66, 0.3967118, 19.131, -39.16083, 132.7705, 133.7985, 118.1487, 118.8192}));
+//        list.add(new IoTMsg(new Double[]{-10.66, 0.3967991, 19.12304, -39.08484, 132.8776, 133.8463, 118.0799, 118.8002}));
+//        list.add(new IoTMsg(new Double[]{-10.66, 0.3967046, 19.11835, -38.4118, 132.9787, 133.8904, 118.0117, 118.7809}));
+//        list.add(new IoTMsg(new Double[]{-10.66, 0.3974093, 19.10254, -35.63397, 133.0792, 133.8904, 117.9779, 118.7617}));
+//        list.add(new IoTMsg(new Double[]{-10.66, 0.3975635, 19.09483, -35.58679, 133.1754, 133.9305, 117.8748, 118.7431}));
+//        list.add(new IoTMsg(new Double[]{-10.66, 0.3966887, 19.09869, -38.23877, 133.2652, 133.9676, 117.8025, 118.7256}));
+//        list.add(new IoTMsg(new Double[]{-10.66, 0.3969766, 19.10436, -39.44427, 133.3629, 134.0015, 117.7309, 118.7256}));
+//        list.add(new IoTMsg(new Double[]{-10.66, 0.3983358, 19.09719, -37.98047, 133.4648, 134.0328, 117.6932, 118.7085}));
+//        list.add(new IoTMsg(new Double[]{-10.66, 0.3983485, 19.0858, -36.78503, 133.5604, 134.0634, 117.6129, 118.6918}));
+//        list.add(new IoTMsg(new Double[]{-10.66, 0.3978139, 19.09092, -32.84259, 133.6593, 134.0634, 117.5011, 118.6771}));
+//        list.add(new IoTMsg(new Double[]{-10.66, 0.3978643, 19.09179, -32.65704, 133.7545, 134.0947, 117.4237, 118.6553}));
+//        list.add(new IoTMsg(new Double[]{-10.66, 0.3988149, 19.07274, -33.69733, 133.8405, 134.125, 117.3438, 118.6335}));
+//        list.add(new IoTMsg(new Double[]{-10.66, 0.3998042, 19.05736, -33.63373, 133.9232, 134.1529, 117.3047, 118.6335}));
+//        list.add(new IoTMsg(new Double[]{-10.66, 0.4004687, 19.05311, -36.7984, 134.0056, 134.1763, 117.1964, 118.6119}));
+//        list.add(new IoTMsg(new Double[]{-10.66, 0.398584, 19.06423, -35.14539, 134.1211, 134.1963, 117.0936, 118.5678}));
+//        list.add(new IoTMsg(new Double[]{-10.66, 0.3993099, 19.06591, -33.87683, 134.2014, 134.2146, 117.0603, 118.5678}));
+//        list.add(new IoTMsg(new Double[]{-10.66, 0.4001607, 19.07098, -33.3526, 134.2736, 134.2312, 116.9553, 118.5471}));
+//        list.add(new IoTMsg(new Double[]{-10.66, 0.4001462, 19.07479, -33.9978, 134.3081, 134.2312, 116.9553, 118.5471}));
+//        list.add(new IoTMsg(new Double[]{-10.67, 0.40013059999999995, 19.08786, -35.16138, 134.3788, 134.2463, 116.8491, 118.5275}));
+//        list.add(new IoTMsg(new Double[]{-10.67, 0.4009608, 19.10514, -38.0509, 134.473, 134.2599, 116.7448, 118.4902}));
+//        list.add(new IoTMsg(new Double[]{-10.67, 0.4004962, 19.10489, -38.17627, 134.5295, 134.2738, 116.6788, 118.4729}));
+//        list.add(new IoTMsg(new Double[]{-10.66, 0.4005843, 19.10673, -35.11194, 134.5855, 134.2875, 116.6197, 118.4729}));
+//        list.add(new IoTMsg(new Double[]{-10.649999999999999, 0.40053790000000006, 19.10951, -33.95453, 134.6357, 134.2995, 116.5629, 118.4558}));
+//        list.add(new IoTMsg(new Double[]{-10.579999999999998, 0.4005851, 19.11929, -34.87567, 134.6809, 134.3107, 116.5301, 118.4737}));
+//        list.add(new IoTMsg(new Double[]{-10.5, 0.40041809999999994, 19.13594, -35.61298, 134.7256, 134.3107, 116.4369, 118.5312}));
+//        list.add(new IoTMsg(new Double[]{-10.36, 0.4001424, 19.1466, -38.61945, 134.7633, 134.3203, 116.4095, 118.5312}));
+//        list.add(new IoTMsg(new Double[]{-10.229999999999999, 0.3995191, 19.15343, -41.18134, 134.799, 134.327, 116.3566, 118.59299999999999}));
+//        list.add(new IoTMsg(new Double[]{-9.92, 0.3988888, 19.15899, -41.29034, 134.8316, 134.3317, 116.3066, 118.6552}));
+//        list.add(new IoTMsg(new Double[]{-9.16, 0.3981453, 19.11916, -42.44208, 134.8687, 134.3358, 116.2307, 118.7153}));
+//        list.add(new IoTMsg(new Double[]{-8.889999999999999, 0.3985295, 19.10333, -43.32147, 134.881, 134.3392, 116.206, 118.7722}));
+//        list.add(new IoTMsg(new Double[]{-8.309999999999999, 0.3992882, 19.08613, -45.37762, 134.9033, 134.3392, 116.1595, 118.7722}));
+//        list.add(new IoTMsg(new Double[]{-7.819999999999999, 0.3999003, 19.06352, -45.42078, 134.9187, 134.3428, 116.1217, 118.8234}));
+//        list.add(new IoTMsg(new Double[]{-7.279999999999999, 0.40041609999999994, 19.05226, -41.09686, 134.9331, 134.3476, 116.091, 118.8694}));
+//        list.add(new IoTMsg(new Double[]{-6.799999999999999, 0.4002319, 19.06224, -38.0658, 134.9457, 134.3537, 116.0745, 118.9109}));
+//        list.add(new IoTMsg(new Double[]{-6.339999999999999, 0.399815, 19.07063, -39.04053, 134.9539, 134.3601, 116.055, 118.9493}));
+//        list.add(new IoTMsg(new Double[]{-5.909998999999999, 0.4000592, 19.07561, -41.19458, 134.9624, 134.3657, 116.0455, 118.9851}));
+//        return list;
+//    }
 }

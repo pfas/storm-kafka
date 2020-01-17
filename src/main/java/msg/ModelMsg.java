@@ -10,15 +10,15 @@ public class ModelMsg implements Serializable {
     private long index;
     private String brand;
     private String stage;
-    private List<Float> mean;
-    private List<Float> std;
-    private List<Float> integral;
-    private List<Float> skew;
-    private List<Float> kurtosis;
+    private List<Double> mean;
+    private List<Double> std;
+    private List<Double> integral;
+    private List<Double> skew;
+    private List<Double> kurtosis;
 
 
-    public List<Float> generate() {
-        List<Float> result = new ArrayList<>();
+    public List<Double> generate() {
+        List<Double> result = new ArrayList<>();
         result.addAll(mean);
         result.addAll(std);
         result.addAll(integral);
@@ -59,43 +59,43 @@ public class ModelMsg implements Serializable {
         this.brand = brand;
     }
 
-    public List<Float> getMean() {
+    public List<Double> getMean() {
         return mean;
     }
 
-    public void setMean(List<Float> mean) {
+    public void setMean(List<Double> mean) {
         this.mean = mean;
     }
 
-    public List<Float> getStd() {
+    public List<Double> getStd() {
         return std;
     }
 
-    public void setStd(List<Float> std) {
+    public void setStd(List<Double> std) {
         this.std = std;
     }
 
-    public List<Float> getIntegral() {
+    public List<Double> getIntegral() {
         return integral;
     }
 
-    public void setIntegral(List<Float> integral) {
+    public void setIntegral(List<Double> integral) {
         this.integral = integral;
     }
 
-    public List<Float> getSkew() {
+    public List<Double> getSkew() {
         return skew;
     }
 
-    public void setSkew(List<Float> skew) {
+    public void setSkew(List<Double> skew) {
         this.skew = skew;
     }
 
-    public List<Float> getKurtosis() {
+    public List<Double> getKurtosis() {
         return kurtosis;
     }
 
-    public void setKurtosis(List<Float> kurtosis) {
+    public void setKurtosis(List<Double> kurtosis) {
         this.kurtosis = kurtosis;
     }
 

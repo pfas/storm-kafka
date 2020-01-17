@@ -27,7 +27,7 @@ public class ControlBolt extends BaseRichBolt {
     }
 
 
-    private Object callControl(Object param) {
+    private Object callControl(ControlMsg controlMsg) {
         /**
          * TODO: 调用反向控制 API
          *

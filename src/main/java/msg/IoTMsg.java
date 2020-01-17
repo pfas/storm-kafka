@@ -4,30 +4,16 @@ import java.util.Arrays;
 
 public class IoTMsg {
 
-//    public static final String HUMID_OUT_DIFF = "humidOutDiff";
-//    public static final String WIND_SPEED = "windspeedActual";
-//    public static final String HUMID_IN = "humidIn";
-//    public static final String PRESS = "press";
-//    public static final String TEMP_ACTUAL_1 = "tempRegion1Actual";
-//    public static final String TEMP_SETTING_1 = "tempRegion1Setting";
-//    public static final String TEMP_ACTUAL_2 = "tempRegion2Actual";
-//    public static final String TEMP_SETTING_2 = "tempRegion2Setting";
-//
-//    public static final String HUMID_OUT = "humidOut";
+    private Double humidOutDiff;
+    private Double windSpeed;
+    private Double humidIn;
+    private Double press;
+    private Double tempActual1;
+    private Double tempSetting1;
+    private Double tempActual2;
+    private Double tempSetting2;
 
-    private float humidOutDiff;
-    private float windSpeed;
-    private float humidIn;
-    private float press;
-    private float tempActual1;
-    private float tempSetting1;
-    private float tempActual2;
-    private float tempSetting2;
-
-    public IoTMsg() {
-    }
-
-    public IoTMsg(Float[] array) {
+    public IoTMsg(Double[] array) {
         this.humidOutDiff = array[0];
         this.windSpeed = array[1];
         this.humidIn = array[2];
@@ -38,14 +24,14 @@ public class IoTMsg {
         this.tempSetting2 = array[7];
     }
 
-    public IoTMsg(float humidOutDiff,
-                  float windSpeed,
-                  float humidIn,
-                  float press,
-                  float tempActual1,
-                  float tempSetting1,
-                  float tempActual2,
-                  float tempSetting2
+    public IoTMsg(Double humidOutDiff,
+                  Double windSpeed,
+                  Double humidIn,
+                  Double press,
+                  Double tempActual1,
+                  Double tempSetting1,
+                  Double tempActual2,
+                  Double tempSetting2
     ) {
         this.humidOutDiff = humidOutDiff;
         this.windSpeed = windSpeed;
@@ -58,8 +44,8 @@ public class IoTMsg {
     }
 
 
-    public Float[] generate() {
-        return new Float[]{
+    public Double[] generate() {
+        return new Double[]{
                 getHumidOutDiff(),
                 getWindSpeed(),
                 getHumidIn(),
@@ -71,67 +57,67 @@ public class IoTMsg {
         };
     }
 
-    public float getHumidOutDiff() {
+    public Double getHumidOutDiff() {
         return humidOutDiff;
     }
 
-    public void setHumidOutDiff(float humidOutDiff) {
+    public void setHumidOutDiff(Double humidOutDiff) {
         this.humidOutDiff = humidOutDiff;
     }
 
-    public float getWindSpeed() {
+    public Double getWindSpeed() {
         return windSpeed;
     }
 
-    public void setWindSpeed(float windSpeed) {
+    public void setWindSpeed(Double windSpeed) {
         this.windSpeed = windSpeed;
     }
 
-    public float getHumidIn() {
+    public Double getHumidIn() {
         return humidIn;
     }
 
-    public void setHumidIn(float humidIn) {
+    public void setHumidIn(Double humidIn) {
         this.humidIn = humidIn;
     }
 
-    public float getPress() {
+    public Double getPress() {
         return press;
     }
 
-    public void setPress(float press) {
+    public void setPress(Double press) {
         this.press = press;
     }
 
-    public float getTempActual1() {
+    public Double getTempActual1() {
         return tempActual1;
     }
 
-    public void setTempActual1(float tempActual1) {
+    public void setTempActual1(Double tempActual1) {
         this.tempActual1 = tempActual1;
     }
 
-    public float getTempSetting1() {
+    public Double getTempSetting1() {
         return tempSetting1;
     }
 
-    public void setTempSetting1(float tempSetting1) {
+    public void setTempSetting1(Double tempSetting1) {
         this.tempSetting1 = tempSetting1;
     }
 
-    public float getTempActual2() {
+    public Double getTempActual2() {
         return tempActual2;
     }
 
-    public void setTempActual2(float tempActual2) {
+    public void setTempActual2(Double tempActual2) {
         this.tempActual2 = tempActual2;
     }
 
-    public float getTempSetting2() {
+    public Double getTempSetting2() {
         return tempSetting2;
     }
 
-    public void setTempSetting2(float tempSetting2) {
+    public void setTempSetting2(Double tempSetting2) {
         this.tempSetting2 = tempSetting2;
     }
 
@@ -146,8 +132,8 @@ public class IoTMsg {
         if (!(obj instanceof IoTMsg)) {
             return false;
         }
-        Float[] source = generate();
-        Float[] target = ((IoTMsg) obj).generate();
+        Double[] source = generate();
+        Double[] target = ((IoTMsg) obj).generate();
         if (source.length != target.length) {
             return false;
         }

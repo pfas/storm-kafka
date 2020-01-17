@@ -1,9 +1,9 @@
 app:
   app-name: MachineLearning
-  env: test
+  env: local
 
 kafka-spout:
-  host: kfan01.chinaeast2.cloudapp.chinacloudapi.cn
+  host: 10.100.100.105
   port: 9092
   topic: iot-kafka
   group-id: strom-consumer
