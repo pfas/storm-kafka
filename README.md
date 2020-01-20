@@ -1,7 +1,5 @@
 # 整体结构
-
 ## 目录结构
-
 ```
 -src
 	-java
@@ -41,3 +39,31 @@
    先进行Split，对于每一个Split进行计算。但是模型需要的特征是按照（均值，方差……） 这样的顺序进行排列的，所有这里还需要进行Merge。把按照Split进行排序变为按照统计量进行排序。
 
 3. 数据的持久化没有做！
+
+## 部署
+
+所有的配置文件都在src/resources/applications.yml里面
+需要进行如下修改：
+```
+app:
+  app-name: MachineLearning
+  env: local
+
+kafka-spout:
+  host: 10.100.100.105 # Kafka IP 需要修改
+  port: 9092
+  topic: iot-kafka # Kafka Topic 需要修改
+  group-id: strom-consumer
+  auto-offset-reset: earliest
+
+model-server:
+  host: localhost # 模型部署在那个host，需要修改
+  port: 80
+  model-url: http://localhost:5000/api/predict  # 模型预测的URL，需要修改为 IP:port/api/predict 格式
+  model-config-url: http://localhost:5000/api/load_model_config # 模型预测的URL，需要修改 IP:port/api/load_model_config 格式
+
+control-server:
+  host: localhost # 反向控制的host，需要修改
+  port: 80
+  control-url: https://localhost:80 # 反向控制的URL，需要IOThub提供
+```
