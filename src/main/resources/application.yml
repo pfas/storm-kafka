@@ -3,10 +3,10 @@ app:
   env: local
 
 kafka-spout:
-  host: 10.100.100.105 # Kafka IP 需要修改
+  host: kfan01.chinaeast2.cloudapp.chinacloudapi.cn # Kafka IP 需要修改
   port: 9092
   topic: iot-kafka # Kafka Topic 需要修改
-  group-id: strom-consumer
+  group-id: strom-consumer3
   auto-offset-reset: earliest
 
 model-server:
@@ -18,6 +18,6 @@ model-server:
 control-server:
   host: localhost # 反向控制的host，需要修改
   port: 80
-  control-url: https://localhost:80 # 反向控制的URL，需要IOThub提供
+  control-url: http://10.114.147.6/api/PLC/SetPLC # 反向控制的URL，需要IOThub提供
 
 

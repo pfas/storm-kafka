@@ -32,7 +32,7 @@ public class WindowsBolt extends BaseRichBolt {
     private TopologyContext topologyContext;
     private OutputCollector outputCollector;
     private Queue<IoTMsg> window = new LinkedList<>();
-    private Gson gson = new Gson();
+    private Gson gson;
 
     private String currentBatch = null;
     private long startIndex = 0;
@@ -41,6 +41,7 @@ public class WindowsBolt extends BaseRichBolt {
         this.map = map;
         this.topologyContext = topologyContext;
         this.outputCollector = outputCollector;
+        this.gson = new Gson();
     }
 
     private int[] getWindowSize(String stage) {
@@ -68,7 +69,9 @@ public class WindowsBolt extends BaseRichBolt {
      */
     public OriginalMsg parseTuple(Tuple tuple) {
         String str = tuple.getSourceComponent();
+        System.out.println("qihang: " + str);
         return gson.fromJson(str, OriginalMsg.class);
+        // return null;
     }
 
 
