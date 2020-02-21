@@ -2,6 +2,7 @@ package core;
 
 import config.AppConfig;
 import msg.ControlMsg;
+import okhttp3.Response;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.OutputFieldsDeclarer;
@@ -46,11 +47,16 @@ public class ControlBolt extends BaseRichBolt {
         params.add(region1);
         params.add(region2);
 
+        Response response = null;
         try {
-            AppUtil.doPost(AppConfig.ControlServerConfig.controlUrl, String.valueOf(new JSONObject(params)));
+            response = AppUtil.doPost(AppConfig.ControlServerConfig.controlUrl, String.valueOf(new JSONObject(params)));
         } catch (IOException e) {
             logger.error(e.getMessage());
             e.printStackTrace();
+        } finally {
+            if (response != null) {
+                response.close();
+            }
         }
         return null;
 

@@ -45,10 +45,9 @@ public class ModelBolt extends BaseRichBolt {
         params.put("index", msg.getIndex());
         params.put("stage", msg.getStage());
         params.put("features", msg.generate());
-
-        System.out.println(msg.generate());
+        Response response = null;
         try {
-            Response response = AppUtil.doPost(AppConfig.ModelServerConfig.modelUrl, String.valueOf(new JSONObject(params)));
+            response = AppUtil.doPost(AppConfig.ModelServerConfig.modelUrl, String.valueOf(new JSONObject(params)));
             JSONObject json = new JSONObject(Objects.requireNonNull(response.body()).string());
             controlMsg.setBatch(json.getString("batch"));
             controlMsg.setBrand(json.getString("brand"));
@@ -57,9 +56,14 @@ public class ModelBolt extends BaseRichBolt {
             controlMsg.setDeviceStatus(json.getString("deviceStatus"));
             controlMsg.setTempRegion1((float) json.getDouble("tempRegion1"));
             controlMsg.setTempRegion2((float) json.getDouble("tempRegion2"));
+            logger.info("ModelBolt: predict value = " + controlMsg.getTempRegion1() + " " + controlMsg.getTempRegion2());
         } catch (IOException e) {
             logger.error(e.getMessage());
             e.printStackTrace();
+        } finally {
+            if (response != null) {
+                response.close();
+            }
         }
         return controlMsg;
     }

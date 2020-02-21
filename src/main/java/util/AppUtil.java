@@ -1,27 +1,35 @@
 package util;
 
+import com.google.inject.Singleton;
 import okhttp3.*;
 
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
+@Singleton
 public class AppUtil {
 
+    private static final OkHttpClient instance =
+            new OkHttpClient.Builder()
+                    .connectTimeout(10, TimeUnit.SECONDS)
+                    .writeTimeout(10, TimeUnit.SECONDS)
+                    .readTimeout(10, TimeUnit.SECONDS)
+                    .retryOnConnectionFailure(true)
+                    .build();
 
     public static Response doPost(String url, String json) throws IOException {
-        OkHttpClient client = new OkHttpClient();
         final MediaType JSON = MediaType.get("application/json; charset=utf-8");
         RequestBody body = RequestBody.create(json, JSON);
         Request request = new Request.Builder()
                 .url(url)
                 .post(body)
                 .build();
-        return client.newCall(request).execute();
+        return instance.newCall(request).execute();
     }
 
     public static Response doGet(String url, Map<String, Object> headers, Map<String, Object> query) throws IOException {
-        OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -45,6 +53,6 @@ public class AppUtil {
 
         builder.url(urlBuilder.build()).headers(headerBuilder.build());
 
-        return client.newCall(builder.build()).execute();
+        return instance.newCall(builder.build()).execute();
     }
 }

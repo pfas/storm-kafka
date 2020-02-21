@@ -28,7 +28,8 @@ public class OriginalMsg implements Serializable {
     }
 
     static {
-        // mapping.put("deviceStatus", "");
+        mapping.put("deviceStatus1", "5H.5H.K1_Z7TT1_PHASE1");
+        mapping.put("deviceStatus2", "5H.5H.K1_Z7TT1_PHASE1");
 
         mapping.put("batch", "6032.6032.YS2CUTBATCHNO");
         mapping.put("brand", "6032.6032.YS2CUTBRAND");

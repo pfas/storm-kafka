@@ -1,7 +1,7 @@
 package msg;
 
 import java.io.Serializable;
-import java.util.Queue;
+import java.util.List;
 
 public class ProcessMsg implements Serializable {
 
@@ -13,7 +13,7 @@ public class ProcessMsg implements Serializable {
 
     private int windowSize;
     private int blockSize;
-    private Queue<IoTMsg> window;
+    private List<IoTMsg> window;
 
     public String getStage() {
         return stage;
@@ -39,11 +39,11 @@ public class ProcessMsg implements Serializable {
         this.blockSize = blockSize;
     }
 
-    public Queue<IoTMsg> getWindow() {
+    public List<IoTMsg> getWindow() {
         return window;
     }
 
-    public void setWindow(Queue<IoTMsg> window) {
+    public void setWindow(List<IoTMsg> window) {
         this.window = window;
     }
 

@@ -19,6 +19,9 @@ public class ModelMsg implements Serializable {
 
     public List<Double> generate() {
         List<Double> result = new ArrayList<>();
+        if (mean == null || std == null || integral == null || skew == null || kurtosis == null) {
+            return result;
+        }
         result.addAll(mean);
         result.addAll(std);
         result.addAll(integral);

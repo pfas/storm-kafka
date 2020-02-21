@@ -45,37 +45,51 @@ public class WindowsBolt extends BaseRichBolt {
     }
 
     private int[] getWindowSize(String stage) {
+        if (stage.equals("head")) {
+            return new int[]{1, 1};
+        }
+        int windowSize = 50;
+        int blockSize = 5;
+        Response response = null;
         try {
             Map<String, Object> query = new HashMap<>();
             query.put("stage", stage);
-            Response response = AppUtil.doGet(
+            response = AppUtil.doGet(
                     AppConfig.ModelServerConfig.modelConfigUrl,
                     new HashMap<>(),
                     query
             );
             JSONObject json = new JSONObject(Objects.requireNonNull(response.body()).string());
-            return new int[]{json.getInt("window_size"), json.getInt("block_size")};
+            windowSize = json.getInt("window_size");
+            blockSize = json.getInt("block_size");
+
+            logger.info("WindowsBolt: window_size=" + windowSize + " block_size=" + blockSize + " and index=" + startIndex);
         } catch (IOException e) {
             logger.error(e.getMessage());
             e.printStackTrace();
+        } finally {
+            if (response != null) {
+                response.close();
+            }
         }
-        return new int[]{50, 5};
+        return new int[]{windowSize, blockSize};
+
     }
 
 
     /**
      * 解析 tuple 里面的参数信息
      * 得到 OriginalMsg
+     * i = 4：根据Kafka的传输过来的数据来确定
      */
     public OriginalMsg parseTuple(Tuple tuple) {
-        String str = tuple.getSourceComponent();
-        System.out.println("qihang: " + str);
+        String str = tuple.getValue(4).toString();
         return gson.fromJson(str, OriginalMsg.class);
-        // return null;
     }
 
 
     /**
+     * TODO
      * 根据 index 判断 stage
      */
     public String determineStage(OriginalMsg msg) {
@@ -105,7 +119,13 @@ public class WindowsBolt extends BaseRichBolt {
 
     public void execute(Tuple tuple) {
         OriginalMsg originalMsg = parseTuple(tuple);
-        IoTMsg msg = new IoTMsg(originalMsg.generate());
+        Double[] array = originalMsg.generate();
+        if (array.length == 0) {
+            return;
+        }
+        // logger.info("WindowsBolt: " + Arrays.toString(originalMsg.generate()));
+
+        IoTMsg msg = new IoTMsg(array);
 
         saveIoTMsg(msg);
 
@@ -130,7 +150,9 @@ public class WindowsBolt extends BaseRichBolt {
             processMsg.setBrand(brand);
             processMsg.setStage(stage);
             processMsg.setTime(time);
-            processMsg.setWindow(window);
+            // need copy a new list for further use
+            // otherwise, cause multiple threads problems
+            processMsg.setWindow(new ArrayList<>(window));
             outputCollector.emit(new Values(processMsg));
         }
         outputCollector.ack(tuple);
